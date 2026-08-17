@@ -74,14 +74,35 @@ function LoginScreen() {
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const submit = async (e) => {
-    e.preventDefault();
-    setErr('');
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+const submit = async (e) => {
+  e.preventDefault();
+
+  setErr('');
+  setLoading(true);
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password,
+    });
+
+    if (error) {
+      console.error('LOGIN ERROR:', error);
+
+      // Supabase xatosini ekranga chiqaramiz
+      setErr(error.message);
+      return;
+    }
+
+    console.log('LOGIN SUCCESS:', data);
+
+  } catch (err) {
+    console.error('LOGIN EXCEPTION:', err);
+    setErr('Kirishda xatolik yuz berdi');
+  } finally {
     setLoading(false);
-    if (error) setErr("Email yoki parol noto'g'ri");
-  };
+  }
+};
 
   return (
     <div className="login-wrap">
